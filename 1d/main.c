@@ -98,8 +98,9 @@ int main(int argc, char** argv) {
       fprintf(stderr, "Grid size is too large\n");
       exit(1);
     }
-    printf("Solving the Poisson equation on a %dx%d grid with %d processors\n",
-           nx, nx, nprocs);
+    printf(
+        "\nSolving the Poisson equation on a %dx%d grid with %d processors\n\n",
+        nx, nx, nprocs);
   }
 
   // MPI_Cart_create as per the first question
@@ -133,7 +134,7 @@ int main(int argc, char** argv) {
   MPE_Decomp1d(nx, nprocs, cart_rank, &s, &e);
   printf("cart_rank = %d is responsible for columns %d through %d, inclusive, "
          "with nbrleft (i.e., which process is to its left) = %d and nbrright "
-         "(i.e., which process is to its right) = %d\n",
+         "(i.e., which process is to its right) = %d\n\n",
          cart_rank, s, e, nbrleft, nbrright);
 
   // Initialise grid with boundary conditions given in the second question
