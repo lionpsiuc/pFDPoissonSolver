@@ -1,0 +1,22 @@
+CC = mpicc
+
+CFLAGS = -Wall -Wextra
+
+LDFLAGS = -lm
+
+POISSOBJS1D = aux.o decomp1d.o gatherwrite.o jacobi.o
+
+EXECS = poiss1d
+
+all: $(EXECS)
+
+poiss1d: main.o $(POISSOBJS1D)
+	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
+
+tags:
+	etags *.c *.h
+
+.PHONY: clean tags tests
+
+clean:
+	$(RM) *.o $(EXECS) TAGS tags
