@@ -31,7 +31,7 @@ void init_oned(double a[][maxn], double b[][maxn], double f[][maxn], int nx,
 
   // Set everything to zero first
   for (int i = s - 1; i <= e + 1; i++) {
-    for (j = 0; j <= nx + 1; j++) {
+    for (int j = 0; j <= nx + 1; j++) {
       a[i][j] = 0.0;
       b[i][j] = 0.0;
       f[i][j] = 0.0;
@@ -48,9 +48,8 @@ void init_oned(double a[][maxn], double b[][maxn], double f[][maxn], int nx,
   // Set the left boundary where u(0,y)=y/(1+y^2)
   if (s == 1) {
     for (int j = 0; j <= ny + 1; j++) {
-      double y = j * h; // Transform to coordinate system
-      if (int j == 0 ||
-          (1.0 + y * y) == 0.0) { // Protect against division by zero
+      double y = j * h;                     // Transform to coordinate system
+      if (j == 0 || (1.0 + y * y) == 0.0) { // Protect against division by zero
         a[0][j] = 0.0;
         b[0][j] = 0.0;
       } else {
@@ -63,9 +62,8 @@ void init_oned(double a[][maxn], double b[][maxn], double f[][maxn], int nx,
   // Set the right boundary where u(1,y)=y/(4+y^2)
   if (e == nx) {
     for (int j = 0; j <= ny + 1; j++) {
-      double y = j * h; // Transform to coordinate system
-      if (int j == 0 ||
-          (4.0 + y * y) == 0.0) { // Protect against division by zero
+      double y = j * h;                     // Transform to coordinate system
+      if (j == 0 || (4.0 + y * y) == 0.0) { // Protect against division by zero
         a[nx + 1][j] = 0.0;
         b[nx + 1][j] = 0.0;
       } else {
@@ -175,12 +173,12 @@ void print_in_order(double x[][maxn], MPI_Comm comm) {
   MPI_Comm_rank(comm, &myid);
   MPI_Comm_size(comm, &size);
   MPI_Barrier(comm);
-  printf("Attempting to print in order\n");
+  printf("Attempting to print in order");
   sleep(1);
   MPI_Barrier(comm);
   for (int i = 0; i < size; i++) {
-    if (int i == myid) {
-      printf("proc %d\n", myid);
+    if (i == myid) {
+      printf("Grid for process %d\n", myid);
       print_full_grid(x);
     }
     fflush(stdout);
