@@ -102,7 +102,7 @@ void write_grid(double a[][maxn], int nx, int ny, int rank, int s, int e,
   sprintf(full_filename, "%s.txt", filename);
   FILE* file = fopen(full_filename, "w");
   if (!file) {
-    fprintf(stderr, "Error opening file: %s\n", full_filename);
+    fprintf(stderr, "Error opening file with name %s\n", full_filename);
     return;
   }
 
