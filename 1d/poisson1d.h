@@ -6,4 +6,4 @@
  * Further explanation, if required.
  */
 
-#define maxn 15 + 2
+#define maxn 31 + 2
