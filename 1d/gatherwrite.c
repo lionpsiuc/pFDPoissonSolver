@@ -117,7 +117,7 @@ void write_grid(char* filename, double a[][maxn], int nx, int ny, int rank,
 
   // Write to file in mesh/grid format; note that each row is a y-coordinate
   // whereas each column is an x-coordinate
-  for (int j = ny + 1; j >= 0; j--) {
+  for (int j = e; j >= s; j--) {
     for (int i = s; i <= e; i++) {
       fprintf(file, "%.6lf ", a[i][j]);
     }
