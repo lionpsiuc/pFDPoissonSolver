@@ -71,7 +71,7 @@ void GatherGrid(double global_grid[][maxn], double a[][maxn], int s, int e,
   }
 
   // Synchronise before data exchange
-  MPI_Barrier(MPI_COMM_WORLD);
+  MPI_Barrier(comm);
 
   // Receive data into root process from other processes
   if (myid != 0) {
@@ -86,6 +86,9 @@ void GatherGrid(double global_grid[][maxn], double a[][maxn], int s, int e,
                  &status);
       }
     }
+
+    // Message to state when the function has completed its task
+    printf("Gathering complete\n");
   }
 }
 
@@ -98,10 +101,14 @@ void GatherGrid(double global_grid[][maxn], double a[][maxn], int s, int e,
  *
  * @return Explain briefly.
  */
-void write_grid(double a[][maxn], int nx, int ny, int rank, int s, int e,
-                const char* filename, int write_to_stdout) {
+void write_grid(char* filename, double a[][maxn], int nx, int ny, int rank,
+                int s, int e, int write_to_stdout) {
+
+  // Create filename with extension
   char full_filename[256];
   sprintf(full_filename, "%s.txt", filename);
+
+  // Open file for writing
   FILE* file = fopen(full_filename, "w");
   if (!file) {
     fprintf(stderr, "Error opening file %s for writing\n", full_filename);
@@ -112,19 +119,19 @@ void write_grid(double a[][maxn], int nx, int ny, int rank, int s, int e,
   // whereas each column is an x-coordinate
   for (int j = ny + 1; j >= 0; j--) {
     for (int i = s; i <= e; i++) {
-      fprintf(file, "%2.6lf ", a[i][j]);
+      fprintf(file, "%.6lf ", a[i][j]);
     }
     fprintf(file, "\n");
   }
+
   fclose(file);
 
-  // As per the assignment instructions, add an option to optionally write to
-  // stdout
+  // Write to terminal if requested
   if (write_to_stdout) {
     printf("Grid for process %d\n", rank);
     for (int j = ny + 1; j >= 0; j--) {
       for (int i = s; i <= e; i++) {
-        printf("%2.6lf ", a[i][j]);
+        printf("%.6lf ", a[i][j]);
       }
       printf("\n");
     }
