@@ -64,7 +64,7 @@ void init_full_grids(double a[][maxn], double b[][maxn], double f[][maxn]) {
  */
 void init_twod(double a[][maxn], double b[][maxn], double f[][maxn], int nx,
                int ny, int row_s, int row_e, int col_s, int col_e) {
-  double h = 1.0 / ((double) (nx + 1)); // Grid spacing
+  double h = 1.0 / ((double) (nx + 1));
 
   // Set everything to zero first
   for (int i = col_s - 1; i <= col_e + 1; i++) {
@@ -149,33 +149,4 @@ void print_grid_to_file(char* fname, double x[][maxn], int nx, int ny) {
     fprintf(fp, "\n");
   }
   fclose(fp);
-}
-
-/**
- * @brief Explain briefly.
- *
- * Further explanation, if required.
- *
- * @param[in/out/in,out] param Explain briefly.
- *
- * @return Explain briefly.
- */
-void print_in_order(double x[][maxn], MPI_Comm comm) {
-  int myid, size;
-  MPI_Comm_rank(comm, &myid);
-  MPI_Comm_size(comm, &size);
-  MPI_Barrier(comm);
-  printf("Attempting to print in order");
-  sleep(1);
-  MPI_Barrier(comm);
-  for (int i = 0; i < size; i++) {
-    if (i == myid) {
-      printf("Grid for process %d\n", myid);
-      print_full_grid(x);
-    }
-    fflush(stdout);
-    usleep(500);
-    MPI_Barrier(
-        comm); // I believe this should be comm instead of MPI_COMM_WORLD
-  }
 }

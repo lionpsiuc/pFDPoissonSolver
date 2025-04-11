@@ -63,14 +63,3 @@ void print_full_grid(double x[][maxn]);
  * @return Explain briefly.
  */
 void print_grid_to_file(char* fname, double x[][maxn], int nx, int ny);
-
-/**
- * @brief Explain briefly.
- *
- * Further explanation, if required.
- *
- * @param[in/out/in,out] param Explain briefly.
- *
- * @return Explain briefly.
- */
-void print_in_order(double x[][maxn], MPI_Comm comm);
