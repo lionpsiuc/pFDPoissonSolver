@@ -13,10 +13,6 @@ all: $(EXECS)
 poiss1d: main.o $(POISSOBJS1D)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-tags:
-	etags *.c *.h
-
-.PHONY: clean tags tests
-
+.PHONY: clean
 clean:
-	$(RM) *.o $(EXECS) TAGS tags
+	$(RM) *.o $(EXECS) *.png *.txt
