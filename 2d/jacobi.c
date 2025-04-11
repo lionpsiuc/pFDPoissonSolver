@@ -73,6 +73,91 @@ double griddiff2d(double a[][maxn], double b[][maxn], int nx, int row_s,
   return sum;
 }
 
+// Need to make this 2D
+void nbxchange_and_sweep(double u[][maxn], double f[][maxn], int nx, int ny,
+                         int s, int e, double unew[][maxn], MPI_Comm comm,
+                         int nbrleft, int nbrright) {
+  MPI_Request req[4];
+  MPI_Status  status;
+  int         idx;
+  double      h;
+  int         i, j, k;
+
+  int myid;
+  MPI_Comm_rank(comm, &myid);
+
+  h = 1.0 / ((double) (nx + 1));
+
+  /* int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, */
+  /*               int source, int tag, MPI_Comm comm, MPI_Request *request); */
+  /* int MPI_Isend(const void *buf, int count, MPI_Datatype datatype, int dest,
+   */
+  /* 		  int tag, MPI_Comm comm, MPI_Request *request); */
+
+  MPI_Irecv(&u[s - 1][1], ny, MPI_DOUBLE, nbrleft, 1, comm, &req[0]);
+  MPI_Irecv(&u[e + 1][1], ny, MPI_DOUBLE, nbrright, 2, comm, &req[1]);
+
+  MPI_Isend(&u[e][1], ny, MPI_DOUBLE, nbrright, 1, comm, &req[2]);
+  MPI_Isend(&u[s][1], ny, MPI_DOUBLE, nbrleft, 2, comm, &req[3]);
+
+  /* perform purely local updates (that don't need ghosts) */
+  /* 2 cols or less means all are on processor boundary */
+  if (e - s + 1 > 2) {
+    for (i = s + 1; i < e; i++) {
+      for (j = 1; j < ny + 1; j++) {
+        unew[i][j] = 0.25 * (u[i - 1][j] + u[i + 1][j] + u[i][j + 1] +
+                             u[i][j - 1] - h * h * f[i][j]);
+      }
+    }
+  }
+
+  /* perform updates in j dir only for boundary cols */
+  for (j = 1; j < ny + 1; j++) {
+    unew[s][j] = 0.25 * (u[s][j + 1] + u[s][j - 1] - h * h * f[s][j]);
+    unew[e][j] = 0.25 * (u[e][j + 1] + u[e][j - 1] - h * h * f[e][j]);
+  }
+
+  /* int MPI_Waitany(int count, MPI_Request array_of_requests[], */
+  /*      int *index, MPI_Status *status) */
+  for (k = 0; k < 4; k++) {
+
+    MPI_Waitany(4, req, &idx, &status);
+    /* printf("(--------------------------------- rank: %d): idx = %d\n",myid,
+     * idx); */
+
+    /* idx 0, 1 are recvs */
+    switch (idx) {
+      case 0:
+        /* printf("myid: %d case idx 0: status.MPI_TAG: %d; status.MPI_SOURCE:
+         * %d (idx: %d)\n",myid,status.MPI_TAG, status.MPI_SOURCE,idx); */
+
+        /* left ghost update completed; update local leftmost column */
+        for (j = 1; j < ny + 1; j++) {
+          unew[s][j] += 0.25 * (u[s - 1][j]);
+        }
+        break;
+      case 1:
+        /* printf("myid: %d case idx 1: status.MPI_TAG: %d; status.MPI_SOURCE:
+         * %d (idx: %d)\n",myid, status.MPI_TAG, status.MPI_SOURCE,idx); */
+
+        /* right ghost update completed; update local rightmost
+       column */
+        for (j = 1; j < ny + 1; j++) {
+          unew[e][j] += 0.25 * (u[e + 1][j]);
+        }
+        break;
+      default: break;
+    }
+  }
+  /* splitting this off to take account of case of one column assigned
+  to proc -- so left and right node neighbours are ghosts so both
+  the recvs must be complete*/
+  for (j = 1; j < ny + 1; j++) {
+    unew[s][j] += 0.25 * (u[s + 1][j]);
+    unew[e][j] += 0.25 * (u[e - 1][j]);
+  }
+}
+
 /**
  * @brief Explain briefly.
  *
