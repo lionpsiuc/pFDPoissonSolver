@@ -29,19 +29,9 @@ void exchang1(double x[][maxn], int nx, int s, int e, MPI_Comm comm,
   MPI_Comm_rank(comm, &rank);
   ny = nx;
   MPI_Ssend(&x[e][1], ny, MPI_DOUBLE, nbrright, 0, comm);
-  // printf("(myid: %d) sent \"col\" %d with %d entries to nbr: %d\n", rank, e,
-  // ny,
-  //        nbrright);
   MPI_Recv(&x[s - 1][1], ny, MPI_DOUBLE, nbrleft, 0, comm, MPI_STATUS_IGNORE);
-  // printf("(myid: %d) recvd into \"col\" %d from %d entries from nbr: %d\n",
-  //        rank, s - 1, ny, nbrleft);
   MPI_Ssend(&x[s][1], ny, MPI_DOUBLE, nbrleft, 1, comm);
-  // printf("(myid: %d) sent \"col\" %d with %d entries to nbr: %d\n", rank, s,
-  // ny,
-  //        nbrleft);
   MPI_Recv(&x[e + 1][1], ny, MPI_DOUBLE, nbrright, 1, comm, MPI_STATUS_IGNORE);
-  // printf("(myid: %d) recvd into \"col\" %d from %d entries from nbr: %d\n",
-  //        rank, e + 1, ny, nbrright);
 }
 
 /**

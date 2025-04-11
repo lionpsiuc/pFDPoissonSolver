@@ -64,12 +64,15 @@ void exchang2d_nb(double x[][maxn], int nx, int row_s, int row_e, int col_s,
   // Left boundary column, which is contiguous
   MPI_Irecv(&x[col_s - 1][row_s], lny, MPI_DOUBLE, nbrleft, 0, comm,
             &reqs[0]); // Explain how this works
+
   // Right boundary column, which is contiguous
   MPI_Irecv(&x[col_e + 1][row_s], lny, MPI_DOUBLE, nbrright, 1, comm,
             &reqs[1]); // Explain how this works
+
   // Bottom boundary row, which is non-contiguous and thus, is using row_type
   MPI_Irecv(&x[col_s][row_s - 1], 1, row_type, nbrdown, 2, comm,
             &reqs[2]); // Explain how this works
+
   // Top boundary row, which is non-contiguous and thus, is using row_type
   MPI_Irecv(&x[col_s][row_e + 1], 1, row_type, nbrup, 3, comm,
             &reqs[3]); // Explain how this works
@@ -77,12 +80,15 @@ void exchang2d_nb(double x[][maxn], int nx, int row_s, int row_e, int col_s,
   // Send rightmost column to right neighbour
   MPI_Isend(&x[col_e][row_s], lny, MPI_DOUBLE, nbrright, 0, comm,
             &reqs[4]); // Explain how this works
+
   // Send leftmost column to left neighbour
   MPI_Isend(&x[col_s][row_s], lny, MPI_DOUBLE, nbrleft, 1, comm,
             &reqs[5]); // Explain how this works
+
   // Send topmost row to top neighbour - non-contiguous
   MPI_Isend(&x[col_s][row_e], 1, row_type, nbrup, 2, comm,
             &reqs[6]); // Explain how this works
+
   // Send bottommost row to bottom neighbour - non-contiguous
   MPI_Isend(&x[col_s][row_s], 1, row_type, nbrdown, 3, comm,
             &reqs[7]); // Explain how this works
