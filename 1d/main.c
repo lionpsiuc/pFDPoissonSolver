@@ -60,14 +60,14 @@ int main(int argc, char** argv) {
   double ldiff;         // Local difference on the respective process
   double tol = 1.0E-11; // Convergence tolerance
 
-  double t1, t2; // Timingt
+  double t1, t2; // Timing
 
   // Initialise the MPI environment
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &myid);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Get_processor_name(name, &namelen);
-  printf("myid = %d is running on node %s\n", myid, name);
+  // printf("myid = %d is running on node %s\n", myid, name);
 
   // Initialise all arrays to zero
   for (int i = 0; i < maxn; i++) {
@@ -141,7 +141,12 @@ int main(int argc, char** argv) {
   init_oned(a, b, f, nx, ny, s, e);
 
   print_in_order(a, cart_comm); // Print the grid for debugging purposes
-  t1 = MPI_Wtime();             // Start timing
+
+  // Start timing
+  if (myid == 0) {
+    printf("\nStarting iterative solver...\n");
+  }
+  t1 = MPI_Wtime(); // Start timing
 
   // Solution to the second question where we must solve the Poisson equation
   // using 1D decomposition
