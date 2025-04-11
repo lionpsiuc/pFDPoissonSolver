@@ -6,6 +6,8 @@
  * Further explanation, if required.
  */
 
+#include "poisson1d.h"
+
 /**
  * @brief Explain briefly.
  *
