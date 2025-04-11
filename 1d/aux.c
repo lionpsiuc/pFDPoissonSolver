@@ -24,10 +24,47 @@
  *
  * @return Explain briefly.
  */
+void init_full_grid(double g[][maxn]) {
+  const double junkval = -5;
+  for (int i = 0; i < maxn; i++) {
+    for (int j = 0; j < maxn; j++) {
+      g[i][j] = junkval;
+    }
+  }
+}
+
+/**
+ * @brief Explain briefly.
+ *
+ * Further explanation, if required.
+ *
+ * @param[in/out/in,out] param Explain briefly.
+ *
+ * @return Explain briefly.
+ */
+void init_full_grids(double a[][maxn], double b[][maxn], double f[][maxn]) {
+  const double junkval = -5;
+  for (int i = 0; i < maxn; i++) {
+    for (int j = 0; j < maxn; j++) {
+      a[i][j] = junkval;
+      b[i][j] = junkval;
+      f[i][j] = junkval;
+    }
+  }
+}
+
+/**
+ * @brief Explain briefly.
+ *
+ * Further explanation, if required.
+ *
+ * @param[in/out/in,out] param Explain briefly.
+ *
+ * @return Explain briefly.
+ */
 void init_oned(double a[][maxn], double b[][maxn], double f[][maxn], int nx,
                int ny, int s, int e) {
-  double h;
-  h = 1.0 / ((double) (nx + 1)); // Grid spacing
+  double h = 1.0 / ((double) (nx + 1)); // Grid spacing
 
   // Set everything to zero first
   for (int i = s - 1; i <= e + 1; i++) {
@@ -70,44 +107,6 @@ void init_oned(double a[][maxn], double b[][maxn], double f[][maxn], int nx,
         a[nx + 1][j] = y / (4.0 + y * y);
         b[nx + 1][j] = y / (4.0 + y * y);
       }
-    }
-  }
-}
-
-/**
- * @brief Explain briefly.
- *
- * Further explanation, if required.
- *
- * @param[in/out/in,out] param Explain briefly.
- *
- * @return Explain briefly.
- */
-void init_full_grid(double g[][maxn]) {
-  const double junkval = -5;
-  for (int i = 0; i < maxn; i++) {
-    for (int j = 0; j < maxn; j++) {
-      g[i][j] = junkval;
-    }
-  }
-}
-
-/**
- * @brief Explain briefly.
- *
- * Further explanation, if required.
- *
- * @param[in/out/in,out] param Explain briefly.
- *
- * @return Explain briefly.
- */
-void init_full_grids(double a[][maxn], double b[][maxn], double f[][maxn]) {
-  const double junkval = -5;
-  for (int i = 0; i < maxn; i++) {
-    for (int j = 0; j < maxn; j++) {
-      a[i][j] = junkval;
-      b[i][j] = junkval;
-      f[i][j] = junkval;
     }
   }
 }

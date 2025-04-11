@@ -41,8 +41,7 @@ void GatherGrid(double global_grid[][maxn], double a[][maxn], int s, int e,
       }
     }
 
-    double h;
-    h = 1.0 / ((double) (nx + 1)); // Grid spacing
+    double h = 1.0 / ((double) (nx + 1)); // Grid spacing
 
     // Set the top boundary where u(x,1)=1/((1+x)^2+1)
     for (int i = 0; i <= nx + 1; i++) {
