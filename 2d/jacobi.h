@@ -19,7 +19,20 @@
  */
 void exchang2d_1(double x[][maxn], int nx, int row_s, int row_e, int col_s,
                  int col_e, MPI_Comm comm, int nbrleft, int nbrright, int nbrup,
-                 int nbrdown);
+                 int nbrdown, MPI_Datatype row_type);
+
+/**
+ * @brief Explain briefly.
+ *
+ * Further explanation, if required.
+ *
+ * @param[in/out/in,out] param Explain briefly.
+ *
+ * @return Explain briefly.
+ */
+void exchang2d_nb(double x[][maxn], int nx, int row_s, int row_e, int col_s,
+                  int col_e, MPI_Comm comm, int nbrleft, int nbrright,
+                  int nbrup, int nbrdown, MPI_Datatype row_type);
 
 /**
  * @brief Explain briefly.
@@ -32,11 +45,6 @@ void exchang2d_1(double x[][maxn], int nx, int row_s, int row_e, int col_s,
  */
 double griddiff2d(double a[][maxn], double b[][maxn], int nx, int row_s,
                   int row_e, int col_s, int col_e);
-
-// Need to make this 2D
-void nbxchange_and_sweep(double u[][maxn], double f[][maxn], int nx, int ny,
-                         int s, int e, double unew[][maxn], MPI_Comm comm,
-                         int nbrleft, int nbrright);
 
 /**
  * @brief Explain briefly.
