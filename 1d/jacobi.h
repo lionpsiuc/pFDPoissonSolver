@@ -29,6 +29,18 @@ void exchang1(double x[][maxn], int nx, int s, int e, MPI_Comm comm,
  *
  * @return Explain briefly.
  */
+void exchangi1(double x[][maxn], int nx, int s, int e, MPI_Comm comm,
+               int nbrleft, int nbrright);
+
+/**
+ * @brief Explain briefly.
+ *
+ * Further explanation, if required.
+ *
+ * @param[in/out/in,out] param Explain briefly.
+ *
+ * @return Explain briefly.
+ */
 double griddiff(double a[][maxn], double b[][maxn], int nx, int s, int e);
 
 /**

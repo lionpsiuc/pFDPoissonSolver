@@ -147,11 +147,11 @@ int main(int argc, char** argv) {
   // using 1D decomposition
   glob_diff = 1000;
   for (it = 0; it < maxit; it++) {
-    exchang1(a, ny, s, e, cart_comm, nbrleft,
-             nbrright); // Exchange ghost cells with neighbouring processes
+    exchangi1(a, ny, s, e, cart_comm, nbrleft,
+              nbrright); // Exchange ghost cells with neighbouring processes
     sweep1d(a, f, nx, s, e, b); // Perform a Jacobi sweep
-    exchang1(b, nx, s, e, cart_comm, nbrleft,
-             nbrright); // Exchange ghost cells again for the next iteration
+    exchangi1(b, nx, s, e, cart_comm, nbrleft,
+              nbrright); // Exchange ghost cells again for the next iteration
     sweep1d(b, f, nx, s, e, a); // Perform yet another Jacobi sweep
 
     // Check for convergence

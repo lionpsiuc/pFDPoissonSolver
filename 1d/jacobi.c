@@ -53,6 +53,25 @@ void exchang1(double x[][maxn], int nx, int s, int e, MPI_Comm comm,
  *
  * @return Explain briefly.
  */
+void exchangi1(double x[][maxn], int nx, int s, int e, MPI_Comm comm,
+               int nbrleft, int nbrright) {
+  MPI_Request reqs[4];
+  MPI_Irecv(&x[s - 1][1], nx, MPI_DOUBLE, nbrleft, 0, comm, &reqs[0]);
+  MPI_Irecv(&x[e + 1][1], nx, MPI_DOUBLE, nbrright, 0, comm, &reqs[1]);
+  MPI_Isend(&x[e][1], nx, MPI_DOUBLE, nbrright, 0, comm, &reqs[2]);
+  MPI_Isend(&x[s][1], nx, MPI_DOUBLE, nbrleft, 0, comm, &reqs[3]);
+  MPI_Waitall(4, reqs, MPI_STATUSES_IGNORE);
+}
+
+/**
+ * @brief Explain briefly.
+ *
+ * Further explanation, if required.
+ *
+ * @param[in/out/in,out] param Explain briefly.
+ *
+ * @return Explain briefly.
+ */
 double griddiff(double a[][maxn], double b[][maxn], int nx, int s, int e) {
   double sum;
   double tmp;
