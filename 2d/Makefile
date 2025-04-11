@@ -1,18 +1,40 @@
 CC = mpicc
 
-CFLAGS = -O3 -Wall -Wextra
+CFLAGS = -I./include -O3 -Wall -Wextra
 
 LDFLAGS = -lm
 
-POISSOBJS2D = aux.o decomp2d.o gatherwrite.o jacobi.o
+SRCDIR = src
+BUILDDIR = build
+BINDIR = bin
 
-EXECS = poiss2d
+# Create object files from source files
+SRCS = $(wildcard $(SRCDIR)/*.c)
+OBJS = $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SRCS))
+
+EXECS = $(BINDIR)/poiss1d
+
+# Make sure the build and bin directories exist
+$(shell mkdir -p $(BUILDDIR) $(BINDIR))
 
 all: $(EXECS)
 
-poiss2d: main.o $(POISSOBJS2D)
+# Rule to compile the executable
+$(BINDIR)/poiss1d: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-.PHONY: clean
+# Rule to compile object files
+$(BUILDDIR)/%.o: $(SRCDIR)/%.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
+# Rule to run the application with four processors
+run: $(EXECS)
+	mpirun -np 4 $(BINDIR)/poiss1d
+
+# Generate a heatmap from the output files
+heatmap:
+	gnuplot scripts/heatmap.gp
+
+.PHONY: clean run heatmap
 clean:
-	$(RM) *.o $(EXECS) *.png *.txt
+	$(RM) -r $(BUILDDIR)/* $(BINDIR)/* *.png *.txt
