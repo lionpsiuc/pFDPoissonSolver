@@ -70,6 +70,9 @@ void GatherGrid(double global_grid[][maxn], double a[][maxn], int s, int e,
     }
   }
 
+  // Synchronise before data exchange
+  MPI_Barrier(MPI_COMM_WORLD);
+
   // Receive data into root process from other processes
   if (myid != 0) {
     for (int col = s; col <= e; col++) { // Send all local columns
@@ -101,7 +104,7 @@ void write_grid(double a[][maxn], int nx, int ny, int rank, int s, int e,
   sprintf(full_filename, "%s.txt", filename);
   FILE* file = fopen(full_filename, "w");
   if (!file) {
-    fprintf(stderr, "Error opening file with name %s\n", full_filename);
+    fprintf(stderr, "Error opening file %s for writing\n", full_filename);
     return;
   }
 
