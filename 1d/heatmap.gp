@@ -3,7 +3,7 @@ set terminal pngcairo enhanced size 1600,600 font 'Arial,12'
 set output 'heatmap.png'
 
 # Enable multiplot to place two heatmaps side-by-side
-set multiplot layout 1,2 title 'Analytical vs. Numerical Solution for the Poisson Equation' font 'Arial,16'
+set multiplot layout 1,2 title 'Analytical vs. Numerical Solution for the Poisson Equation Using 1D Decomposition' font 'Arial,16'
 
 # Common settings for all plots
 set palette rgbformulae 22,13,-31
