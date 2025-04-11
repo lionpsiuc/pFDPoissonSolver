@@ -15,5 +15,6 @@
  *
  * @return Explain briefly.
  */
-int MPE_Decomp2d(int nrows, int ncols, int rank, int* coords, int* row_s,
-                 int* row_e, int* col_s, int* col_e, int* dims);
+int MPE_Decomp2d(int nrows, int ncols, int rank __attribute__((unused)),
+                 int* coords, int* row_s, int* row_e, int* col_s, int* col_e,
+                 int* dims);

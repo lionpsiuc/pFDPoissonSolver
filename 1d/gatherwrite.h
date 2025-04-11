@@ -28,5 +28,6 @@ void GatherGrid(double global_grid[][maxn], double a[][maxn], int s, int e,
  *
  * @return Explain briefly.
  */
-void write_grid(char* filename, double a[][maxn], int nx, int ny, int rank,
-                int s, int e, int write_to_stdout);
+void write_grid(char* filename, double a[][maxn],
+                int nx __attribute__((unused)), int ny, int rank, int s, int e,
+                int write_to_stdout);

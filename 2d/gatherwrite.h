@@ -31,6 +31,7 @@ void GatherGrid2D(double global_grid[][maxn], double a[][maxn], int row_s,
  *
  * @return Explain briefly.
  */
-void write_grid(char* filename, double a[][maxn], int nx, int ny, int rank,
-                int row_s, int row_e, int col_s, int col_e,
+void write_grid(char* filename, double a[][maxn],
+                int nx __attribute__((unused)), int ny __attribute__((unused)),
+                int rank, int row_s, int row_e, int col_s, int col_e,
                 int write_to_stdout);

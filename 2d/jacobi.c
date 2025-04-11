@@ -22,9 +22,9 @@
  *
  * @return Explain briefly.
  */
-void exchang2d_1(double x[][maxn], int nx, int row_s, int row_e, int col_s,
-                 int col_e, MPI_Comm comm, int nbrleft, int nbrright, int nbrup,
-                 int nbrdown, MPI_Datatype row_type) {
+void exchang2d_1(double x[][maxn], int nx __attribute__((unused)), int row_s,
+                 int row_e, int col_s, int col_e, MPI_Comm comm, int nbrleft,
+                 int nbrright, int nbrup, int nbrdown, MPI_Datatype row_type) {
   int lny = row_e - row_s + 1; // Explain how this works
 
   // Exchange in horizontal direction (i.e., left to right); these are
@@ -55,9 +55,9 @@ void exchang2d_1(double x[][maxn], int nx, int row_s, int row_e, int col_s,
  *
  * @return Explain briefly.
  */
-void exchang2d_nb(double x[][maxn], int nx, int row_s, int row_e, int col_s,
-                  int col_e, MPI_Comm comm, int nbrleft, int nbrright,
-                  int nbrup, int nbrdown, MPI_Datatype row_type) {
+void exchang2d_nb(double x[][maxn], int nx __attribute__((unused)), int row_s,
+                  int row_e, int col_s, int col_e, MPI_Comm comm, int nbrleft,
+                  int nbrright, int nbrup, int nbrdown, MPI_Datatype row_type) {
   int         lny = row_e - row_s + 1; // Explain how this works
   MPI_Request reqs[8];                 // Explain how this works
 
@@ -106,8 +106,9 @@ void exchang2d_nb(double x[][maxn], int nx, int row_s, int row_e, int col_s,
  *
  * @return Explain briefly.
  */
-double griddiff2d(double a[][maxn], double b[][maxn], int nx, int row_s,
-                  int row_e, int col_s, int col_e) {
+double griddiff2d(double a[][maxn], double b[][maxn],
+                  int nx __attribute__((unused)), int row_s, int row_e,
+                  int col_s, int col_e) {
   double sum = 0.0;
   double tmp;
   for (int i = col_s; i <= col_e; i++) {

@@ -45,7 +45,8 @@ void init_full_grids(double a[][maxn], double b[][maxn], double f[][maxn]) {
  * @return Explain briefly.
  */
 void init_twod(double a[][maxn], double b[][maxn], double f[][maxn], int nx,
-               int ny, int row_s, int row_e, int col_s, int col_e) {
+               int ny __attribute__((unused)), int row_s, int row_e, int col_s,
+               int col_e) {
   double h = 1.0 / ((double) (nx + 1)); // Grid spacing
 
   // Set everything to zero first
