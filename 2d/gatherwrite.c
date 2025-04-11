@@ -37,7 +37,7 @@ void GatherGrid2D(double global_grid[maxn][maxn], double a[maxn][maxn],
     }
     for (int i = col_s; i < maxn - 1; i++) {
       double x               = i * h;
-      global_grid[i][nx + 1] = 1.0 / ((1 + x) * (1 + x) + 1);
+      global_grid[i][ny + 1] = 1.0 / ((1 + x) * (1 + x) + 1);
     }
     for (int i = col_s; i < maxn - 1; i++) {
       global_grid[i][0] = 0.0;
@@ -75,14 +75,14 @@ void GatherGrid2D(double global_grid[maxn][maxn], double a[maxn][maxn],
  *
  * @return Explain briefly.
  */
-void write_grid(char* filename, double a[][maxn], int nx, int ny, int rank,
-                int row_s, int row_e, int col_s, int col_e) {
+void write_grid(char* filename, double a[][maxn], int nx, int row_s, int row_e,
+                int col_s, int col_e) {
   char full_filename[256];
-  sprintf(full_filename, "%s_%d.txt", filename, rank);
+  sprintf(full_filename, "%s.txt", filename);
   FILE* file = fopen(full_filename, "w");
   if (!file) {
-    fprintf(stderr, "Error opening file\n");
-    exit(-1);
+    fprintf(stderr, "Error opening file with name %s\n", full_filename);
+    return;
   }
   for (int j = row_e + 1; j >= row_s - 1; j--) {
     for (int i = col_s - 1; i <= col_e + 1; i++) {
