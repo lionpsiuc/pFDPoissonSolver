@@ -22,46 +22,86 @@
  *
  * @return Explain briefly.
  */
-void GatherGrid2D(double global_grid[maxn][maxn], double a[maxn][maxn],
-                  int row_s, int row_e, int col_s, int col_e, int nx, int ny,
-                  int myid, int nprocs, int* row_s_vals, int* row_e_vals,
-                  int* col_s_vals, int* col_e_vals) {
-  int lny;
-  lny = row_e - row_s + 1;
+void GatherGrid2D(double global_grid[][maxn], double a[][maxn], int row_s,
+                  int row_e, int col_s, int col_e, int nx, int ny, int myid,
+                  int nprocs, int* row_s_vals, int* row_e_vals, int* col_s_vals,
+                  int* col_e_vals) {
+
   if (myid == 0) {
-    double h = 1.0 / ((double) (nx + 1)); // Grid spacing
-    for (int i = col_s - 1; i <= col_e; i++) {
-      for (int j = row_s; j < row_e + 1; j++) {
+    printf("\nGathering solution from all processes...\n");
+
+    // Initialise the global grid first
+    for (int i = 0; i < maxn; i++) {
+      for (int j = 0; j < maxn; j++) {
+        global_grid[i][j] = 0.0;
+      }
+    }
+
+    // Copy local data from root process
+    for (int i = col_s; i <= col_e; i++) {
+      for (int j = row_s; j <= row_e; j++) {
         global_grid[i][j] = a[i][j];
       }
     }
-    for (int i = col_s; i < maxn - 1; i++) {
+
+    double h = 1.0 / ((double) (nx + 1)); // Grid spacing
+
+    // Set the top boundary where u(x,1)=1/((1+x)^2+1)
+    for (int i = 0; i <= nx + 1; i++) {
       double x               = i * h;
-      global_grid[i][ny + 1] = 1.0 / ((1 + x) * (1 + x) + 1);
+      global_grid[i][ny + 1] = 1.0 / ((1.0 + x) * (1.0 + x) + 1.0);
     }
-    for (int i = col_s; i < maxn - 1; i++) {
-      global_grid[i][0] = 0.0;
-    }
-    for (int j = maxn - 1; j >= 1; j--) {
+
+    // Set the left boundary where u(0,y)=y/(1+y^2)
+    for (int j = 0; j <= ny + 1; j++) {
       double y          = j * h;
-      global_grid[0][j] = y / (1 + y * y);
-    }
-    for (int j = maxn - 1; j >= 1; j--) {
-      double y               = j * h;
-      global_grid[nx + 1][j] = y / (4 + y * y);
-    }
-  }
-  if (myid != 0) {
-    for (int p = col_s; p <= col_e; p++)
-      MPI_Send(&a[p][row_s], lny, MPI_DOUBLE, 0, p + myid, MPI_COMM_WORLD);
-  }
-  if (myid == 0) {
-    MPI_Status status;
-    for (int proc = 1; proc < nprocs; proc++) {
-      for (int col = col_s_vals[proc]; col <= col_e_vals[proc]; col++) {
-        MPI_Recv(&global_grid[col][row_s_vals[proc]], lny, MPI_DOUBLE, proc,
-                 proc + col, MPI_COMM_WORLD, &status);
+      global_grid[0][j] = (j == 0) ? 0.0 : y / (1.0 + y * y);
+      if (j == 0 || (1.0 + y * y) == 0.0) { // Protect against division by zero
+        global_grid[0][j] = 0.0;
+      } else {
+        global_grid[0][j] = y / (1.0 + y * y);
       }
+    }
+
+    // Set the right boundary where u(1,y)=y/(4+y^2)
+    for (int j = 0; j <= ny + 1; j++) {
+      double y = j * h;
+      if (j == 0 || (4.0 + y * y) == 0.0) { // Protect against division by zero
+        global_grid[nx + 1][j] = 0.0;
+      } else {
+        global_grid[nx + 1][j] = y / (4.0 + y * y);
+      }
+    }
+
+    // Synchronise before data exchange
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    // Receive data into root process from other processes
+    if (myid != 0) {
+      int local_rows = row_e - row_s + 1;
+      for (int col = col_s; col <= col_e; col++) {
+        int tag = 10000 + myid * 100 +
+                  col; // Use a unique tag based on process ID and column
+        MPI_Send(&a[col][row_s], local_rows, MPI_DOUBLE, 0, tag,
+                 MPI_COMM_WORLD);
+      }
+    } else { // Root process receives from all other processes
+      for (int p = 1; p < nprocs; p++) {
+        int p_row_s      = row_s_vals[p];
+        int p_row_e      = row_e_vals[p];
+        int p_col_s      = col_s_vals[p];
+        int p_col_e      = col_e_vals[p];
+        int p_local_rows = p_row_e - p_row_s + 1;
+        printf("Receiving from process %d (rows %d-%d, cols %d-%d)...\n", p,
+               p_row_s, p_row_e, p_col_s, p_col_e);
+        for (int col = p_col_s; col <= p_col_e; col++) {
+          MPI_Status status;
+          int        tag = 10000 + p * 100 + col;
+          MPI_Recv(&global_grid[col][p_row_s], p_local_rows, MPI_DOUBLE, p, tag,
+                   MPI_COMM_WORLD, &status);
+        }
+      }
+      printf("Gathering complete. Full solution assembled.\n");
     }
   }
 }
@@ -75,19 +115,24 @@ void GatherGrid2D(double global_grid[maxn][maxn], double a[maxn][maxn],
  *
  * @return Explain briefly.
  */
-void write_grid(char* filename, double a[][maxn], int nx, int row_s, int row_e,
-                int col_s, int col_e) {
+void write_grid(char* filename, double a[][maxn], int nx, int ny, int rank,
+                int row_s, int row_e, int col_s, int col_e) {
   char full_filename[256];
   sprintf(full_filename, "%s.txt", filename);
   FILE* file = fopen(full_filename, "w");
   if (!file) {
-    fprintf(stderr, "Error opening file with name %s\n", full_filename);
+    fprintf(stderr, "Error opening file %s for writing\n", full_filename);
     return;
   }
-  for (int j = row_e + 1; j >= row_s - 1; j--) {
-    for (int i = col_s - 1; i <= col_e + 1; i++) {
-      fprintf(file, "%2.6lf ", a[i][j]);
+
+  // Write to file in mesh/grid format; note that each row is a y-coordinate
+  // whereas each column is an x-coordinate
+  for (int j = row_e; j >= row_s; j--) {
+    for (int i = col_s; i <= col_e; i++) {
+      fprintf(file, "%.6lf ", a[i][j]);
     }
     fprintf(file, "\n");
   }
+  fclose(file);
+  printf("Grid written to file %s in mesh/grid format\n", full_filename);
 }
