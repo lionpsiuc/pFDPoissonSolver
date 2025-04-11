@@ -24,24 +24,6 @@
  *
  * @return Explain briefly.
  */
-void init_full_grid(double g[][maxn]) {
-  const double junkval = -5;
-  for (int i = 0; i < maxn; i++) {
-    for (int j = 0; j < maxn; j++) {
-      g[i][j] = junkval;
-    }
-  }
-}
-
-/**
- * @brief Explain briefly.
- *
- * Further explanation, if required.
- *
- * @param[in/out/in,out] param Explain briefly.
- *
- * @return Explain briefly.
- */
 void init_full_grids(double a[][maxn], double b[][maxn], double f[][maxn]) {
   const double junkval = -5;
   for (int i = 0; i < maxn; i++) {
@@ -64,7 +46,7 @@ void init_full_grids(double a[][maxn], double b[][maxn], double f[][maxn]) {
  */
 void init_twod(double a[][maxn], double b[][maxn], double f[][maxn], int nx,
                int ny, int row_s, int row_e, int col_s, int col_e) {
-  double h = 1.0 / ((double) (nx + 1));
+  double h = 1.0 / ((double) (nx + 1)); // Grid spacing
 
   // Set everything to zero first
   for (int i = col_s - 1; i <= col_e + 1; i++) {
@@ -77,9 +59,9 @@ void init_twod(double a[][maxn], double b[][maxn], double f[][maxn], int nx,
 
   if (row_e == nx) {
     for (int i = col_s; i <= col_e; i++) {
-      double x     = i * h;
-      a[i][nx + 1] = 1.0 / ((1 + x) * (1 + x) + 1);
-      b[i][nx + 1] = 1.0 / ((1 + x) * (1 + x) + 1);
+      double x     = i * h; // Transform to coordinate system
+      a[i][nx + 1] = 1.0 / ((1.0 + x) * (1.0 + x) + 1.0);
+      b[i][nx + 1] = 1.0 / ((1.0 + x) * (1.0 + x) + 1.0);
     }
   }
   if (row_s == 1) {
@@ -90,63 +72,16 @@ void init_twod(double a[][maxn], double b[][maxn], double f[][maxn], int nx,
   }
   if (col_s == 1) {
     for (int j = row_s; j <= row_e; j++) {
-      double y = j * h;
-      a[0][j]  = y / (1 + y * y);
-      b[0][j]  = y / (1 + y * y);
+      double y = j * h; // Transform to coordinate system
+      a[0][j]  = y / (1.0 + y * y);
+      b[0][j]  = y / (1.0 + y * y);
     }
   }
   if (col_e == nx) {
     for (int j = row_s; j <= row_e; j++) {
-      double y     = j * h;
-      a[nx + 1][j] = y / (4 + y * y);
-      b[nx + 1][j] = y / (4 + y * y);
+      double y     = j * h; // Transform to coordinate system
+      a[nx + 1][j] = y / (4.0 + y * y);
+      b[nx + 1][j] = y / (4.0 + y * y);
     }
   }
-}
-
-/**
- * @brief Explain briefly.
- *
- * Further explanation, if required.
- *
- * @param[in/out/in,out] param Explain briefly.
- *
- * @return Explain briefly.
- */
-void print_full_grid(double x[][maxn]) {
-  for (int j = maxn - 1; j >= 0; j--) {
-    for (int i = 0; i < maxn; i++) {
-      if (x[i][j] < 10000.0) {
-        printf("|%2.6lf| ", x[i][j]);
-      } else {
-        printf("%9.2lf ", x[i][j]);
-      }
-    }
-    printf("\n");
-  }
-}
-
-/**
- * @brief Explain briefly.
- *
- * Further explanation, if required.
- *
- * @param[in/out/in,out] param Explain briefly.
- *
- * @return Explain briefly.
- */
-void print_grid_to_file(char* fname, double x[][maxn], int nx, int ny) {
-  FILE* fp;
-  fp = fopen(fname, "w");
-  if (!fp) {
-    fprintf(stderr, "Can't open file %s\n", fname);
-    exit(4);
-  }
-  for (int j = ny + 1; j >= 0; j--) {
-    for (int i = 0; i < nx + 2; i++) {
-      fprintf(fp, "%lf ", x[i][j]);
-    }
-    fprintf(fp, "\n");
-  }
-  fclose(fp);
 }

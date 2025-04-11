@@ -24,24 +24,6 @@
  *
  * @return Explain briefly.
  */
-void init_full_grid(double g[][maxn]) {
-  const double junkval = -5;
-  for (int i = 0; i < maxn; i++) {
-    for (int j = 0; j < maxn; j++) {
-      g[i][j] = junkval;
-    }
-  }
-}
-
-/**
- * @brief Explain briefly.
- *
- * Further explanation, if required.
- *
- * @param[in/out/in,out] param Explain briefly.
- *
- * @return Explain briefly.
- */
 void init_full_grids(double a[][maxn], double b[][maxn], double f[][maxn]) {
   const double junkval = -5;
   for (int i = 0; i < maxn; i++) {
@@ -108,81 +90,5 @@ void init_oned(double a[][maxn], double b[][maxn], double f[][maxn], int nx,
         b[nx + 1][j] = y / (4.0 + y * y);
       }
     }
-  }
-}
-
-/**
- * @brief Explain briefly.
- *
- * Further explanation, if required.
- *
- * @param[in/out/in,out] param Explain briefly.
- *
- * @return Explain briefly.
- */
-void print_full_grid(double x[][maxn]) {
-  for (int j = maxn - 1; j >= 0; j--) {
-    for (int i = 0; i < maxn; i++) {
-      if (x[i][j] < 10000.0) {
-        printf("|%2.6lf| ", x[i][j]);
-      } else {
-        printf("%9.2lf ", x[i][j]);
-      }
-    }
-    printf("\n");
-  }
-}
-
-/**
- * @brief Explain briefly.
- *
- * Further explanation, if required.
- *
- * @param[in/out/in,out] param Explain briefly.
- *
- * @return Explain briefly.
- */
-void print_grid_to_file(char* fname, double x[][maxn], int nx, int ny) {
-  FILE* fp;
-  fp = fopen(fname, "w");
-  if (!fp) {
-    fprintf(stderr, "Can't open file %s\n", fname);
-    exit(4);
-  }
-  for (int j = ny + 1; j >= 0; j--) {
-    for (int i = 0; i < nx + 2; i++) {
-      fprintf(fp, "%lf ", x[i][j]);
-    }
-    fprintf(fp, "\n");
-  }
-  fclose(fp);
-}
-
-/**
- * @brief Explain briefly.
- *
- * Further explanation, if required.
- *
- * @param[in/out/in,out] param Explain briefly.
- *
- * @return Explain briefly.
- */
-void print_in_order(double x[][maxn], MPI_Comm comm) {
-  int myid, size;
-  MPI_Comm_rank(comm, &myid);
-  MPI_Comm_size(comm, &size);
-  MPI_Barrier(comm);
-  printf("Attempting to print in order");
-  sleep(1);
-  MPI_Barrier(comm);
-  for (int i = 0; i < size; i++) {
-    if (i == myid) {
-      printf("Grid for process %d\n", myid);
-      print_full_grid(x);
-    }
-    fflush(stdout);
-    usleep(500);
-    MPI_Barrier(
-        comm); // I believe this should be comm instead of MPI_COMM_WORLD
   }
 }
