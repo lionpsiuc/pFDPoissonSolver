@@ -8,8 +8,8 @@ set multiplot layout 1,2 title 'Analytical vs. Numerical Solution for the Poisso
 # Common settings for all plots
 set palette rgbformulae 22,13,-31
 set pm3d map
-set yrange [0:31] reverse
-set xrange [0:31]
+set yrange [0:30] reverse
+set xrange [0:30]
 
 # First plot
 set title 'Numerical Solution'
