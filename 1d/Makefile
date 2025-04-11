@@ -1,6 +1,6 @@
 CC = mpicc
 
-CFLAGS = -O3 -Wall -Wextra -I./include
+CFLAGS = -I./include -O3 -Wall -Wextra
 
 LDFLAGS = -lm
 
@@ -8,7 +8,7 @@ SRCDIR = src
 BUILDDIR = build
 BINDIR = bin
 
-# Create object file names from source files
+# Create object files from source files
 SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SRCS))
 
@@ -23,11 +23,11 @@ all: $(EXECS)
 $(BINDIR)/poiss1d: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
-# Rule to compile object files from C files
+# Rule to compile object files
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Rule to run the application with 4 processors
+# Rule to run the application with four processors
 run: $(EXECS)
 	mpirun -np 4 $(BINDIR)/poiss1d
 
