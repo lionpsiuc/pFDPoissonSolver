@@ -183,8 +183,7 @@ int main(int argc, char** argv) {
 
   // Calculate the analytical solution for comparison
   double g[maxn][maxn]; // Array to store analytical solution values
-  double h;
-  h = 1.0 / ((double) (nx + 1)); // Grid spacing
+  double h = 1.0 / ((double) (nx + 1)); // Grid spacing
   double x, y; // These are our x- and y-coordinates, respectively
   for (int i = 0; i <= nx + 1; i++) {
     for (int j = 0; j <= ny + 1; j++) {
