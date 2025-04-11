@@ -1,6 +1,6 @@
 CC = mpicc
 
-CFLAGS = -Wall -Wextra
+CFLAGS = -O3 -Wall -Wextra
 
 LDFLAGS = -lm
 
