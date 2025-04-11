@@ -10,8 +10,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "jacobi.h"
-#include "poisson2d.h"
+#include "../include/jacobi.h"
+#include "../include/poisson2d.h"
 
 /**
  * @brief Explain briefly.

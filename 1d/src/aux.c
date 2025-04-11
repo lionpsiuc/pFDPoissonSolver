@@ -12,8 +12,8 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "aux.h"
-#include "poisson1d.h"
+#include "../include/aux.h"
+#include "../include/poisson1d.h"
 
 /**
  * @brief Explain briefly.

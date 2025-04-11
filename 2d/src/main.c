@@ -1,10 +1,9 @@
 /**
  * @file main.c
  *
- * @brief Main program for 1D parallel Poisson solver.
+ * @brief Explain briefly.
  *
- * Implements a 1D decomposition of the finite difference grid for solving
- * the 2D Poisson equation using the Jacobi method.
+ * Further explanation, if required.
  */
 
 #include <math.h>
@@ -13,11 +12,11 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "aux.h"
-#include "decomp1d.h"
-#include "gatherwrite.h"
-#include "jacobi.h"
-#include "poisson1d.h"
+#include "../include/aux.h"
+#include "../include/decomp2d.h"
+#include "../include/gatherwrite.h"
+#include "../include/jacobi.h"
+#include "../include/poisson2d.h"
 
 #define maxit 2000
 
@@ -38,7 +37,7 @@ int main(int argc, char** argv) {
   double b[maxn][maxn];           // Next iteration solution grid
   double f[maxn][maxn];           // Right-hand side function values
   double global_grid[maxn][maxn]; // Global solution after gathering from all
-                                  // processes using GatherGrid
+                                  // processes using GatherGrid2D
 
   // Problem size; note that for this assignment, they are equal
   int nx; // Size of the x-axis; interior points only
@@ -50,10 +49,8 @@ int main(int argc, char** argv) {
   int  namelen;      // Length of processor name
 
   // Domain decomposition
-  int nbrleft, nbrright; // Ranks of the left and right neighbouring processes;
-                         // note that these are set by MPI_Cart_shift
-  int s, e; // The start and end indices of the local domain; these are the
-            // columns assigned to the respective process
+  int nbrup, nbrright, nbrdown, nbrleft; // Explain how this works
+  int row_s, row_e, col_s, col_e;        // Explain how this works
 
   // Iteration and convergence
   int    it;            // Iteration counter
@@ -68,11 +65,12 @@ int main(int argc, char** argv) {
   MPI_Comm_rank(MPI_COMM_WORLD, &myid);
   MPI_Comm_size(MPI_COMM_WORLD, &nprocs);
   MPI_Get_processor_name(name, &namelen);
+  // printf("myid = %d is running on node %s\n", myid, name);
 
-  // Print header information
+  // Programme header
   if (myid == 0) {
     printf("\n=======================================================\n");
-    printf("                   1D Implementation                   \n");
+    printf("                   2D Implementation                   \n");
     printf("=======================================================\n\n");
 
     // Process the command-line arguments which in turn, sets the size of our
@@ -108,44 +106,56 @@ int main(int argc, char** argv) {
   // Initialise arrays
   init_full_grids(a, b, f);
 
-  // MPI_Cart_create as per the first question
+  // MPI_Cart_create as per the assignment instructions
   int ndims =
-      1; // Number of dimensions in the Cartesian topology; it is 1 for 1D
-  int dims[1] = {
-      nprocs}; // Number of processes in each dimension; since we only have one
-               // dimension, we choose all processes here
-  int periods[1] = {
-      0}; // This is set to 0 to ensure non-periodic boundaries meaning that
-          // processes at the edge have no neighbour in that direction
+      2; // Number of dimensions in the Cartesian topology; it is 2 for 2D
+  int dims[2] = {0, 0}; // Number of processes in each dimension; initialised to
+                        // 0 to let MPI_Dims_create compute optimal values
+  int periods[2] = {
+      0, 0}; // This is set to 0 to ensure non-periodic boundaries meaning that
+             // processes at the edge have no neighbour in that directions
   int reorder = 1; // Optimisation flag allowing MPI to reorder process ranks
   int cart_rank;   // Process rank in the Cartesian communicator; note that this
                    // may differ from the original rank if reordering is enabled
   MPI_Comm cart_comm; // Our communicator
-  int coords[1]; // Will store the coordinates in the Cartesian grid for the
+  int coords[2]; // Will store the coordinates in the Cartesian grid for the
                  // process in question
+  MPI_Dims_create(nprocs, ndims,
+                  dims); // Create a balanced distribution across our dimensions
   MPI_Cart_create(MPI_COMM_WORLD, ndims, dims, periods, reorder,
                   &cart_comm); // Create the Cartesian communicator
   MPI_Comm_rank(
       cart_comm,
       &cart_rank); // Get this process's rank in the Cartesian communicator
-  MPI_Cart_coords(cart_comm, cart_rank, 1,
+  MPI_Cart_coords(cart_comm, cart_rank, ndims,
                   coords); // Get this process's coordinates in the grid
-  MPI_Cart_shift(cart_comm, 0, 1, &nbrleft,
-                 &nbrright); // Find neighbouring processes
+
+  // Find neighbouring processes
+  MPI_Cart_shift(cart_comm, 0, 1, &nbrup, &nbrdown); // Up and down neighbours
+  MPI_Cart_shift(cart_comm, 1, 1, &nbrleft,
+                 &nbrright); // Left and right neighbours
 
   // This is an extra check to ensure we have no neighbours for the boundary
   // points
   if (coords[0] == 0) {
+    nbrup = MPI_PROC_NULL; // For processes at the top edge, there is no upward
+                           // neighbour
+  }
+  if (coords[0] == dims[0] - 1) {
+    nbrdown = MPI_PROC_NULL; // For processes at the bottom edge, there is no
+                             // downward neighbour
+  }
+  if (coords[1] == 0) {
     nbrleft = MPI_PROC_NULL; // For processes at the left edge, there is no
                              // leftward neighbour
   }
-  if (coords[0] == dims[0] - 1) {
+  if (coords[1] == dims[1] - 1) {
     nbrright = MPI_PROC_NULL; // For processes at the right edge, there is no
                               // rightward neighbour
   }
 
-  // Compute local domain bounds using a 1D decomposition
-  MPE_Decomp1d(nx, nprocs, cart_rank, &s, &e);
+  // Compute local domain bounds using a 2D decomposition
+  MPE_Decomp2d(nx, ny, cart_rank, coords, &row_s, &row_e, &col_s, &col_e, dims);
 
   // Print process layout
   MPI_Barrier(cart_comm);
@@ -154,9 +164,10 @@ int main(int argc, char** argv) {
   }
   for (int p = 0; p < nprocs; p++) {
     if (p == cart_rank) {
-      printf("Process %2d: Coords = (%d) | Domain = (cols %2d to %2d) | "
-             "Neighbours = (L: %2d, R: %2d)\n",
-             cart_rank, coords[0], s, e, nbrleft, nbrright);
+      printf("Process %2d: Coords = (%d, %d) | Domain = (rows %2d to %2d, cols "
+             "%2d to %2d) | Neighbours = (U: %2d, D: %2d, L: %2d, R: %2d)\n",
+             cart_rank, coords[0], coords[1], row_s, row_e, col_s, col_e, nbrup,
+             nbrdown, nbrleft, nbrright);
       fflush(stdout);
     }
     usleep(1000); // Small delay
@@ -164,7 +175,13 @@ int main(int argc, char** argv) {
   }
 
   // Initialise grid with boundary conditions
-  init_oned(a, b, f, nx, ny, s, e);
+  init_twod(a, b, f, nx, ny, row_s, row_e, col_s, col_e);
+
+  // Create an MPI_Datatype for row exchanges (i.e., non-contiguous data)
+  int          lnx = col_e - col_s + 1;
+  MPI_Datatype row_type;
+  MPI_Type_vector(lnx, 1, maxn, MPI_DOUBLE, &row_type);
+  MPI_Type_commit(&row_type);
 
   // Start timing
   if (cart_rank == 0) {
@@ -172,19 +189,21 @@ int main(int argc, char** argv) {
   }
   t1 = MPI_Wtime();
 
-  // Solution to the second question where we must solve the Poisson equation
-  // using 1D decomposition
+  // Main iteration loop
   glob_diff = 1000;
   for (it = 0; it < maxit; it++) {
-    exchangi1(a, ny, s, e, cart_comm, nbrleft,
-              nbrright);        // Exchange ghost cells
-    sweep1d(a, f, nx, s, e, b); // Perform a Jacobi sweep
-    exchangi1(b, nx, s, e, cart_comm, nbrleft,
-              nbrright);        // Exchange ghost cells again
-    sweep1d(b, f, nx, s, e, a); // Perform another Jacobi sweep
+    exchang2d_1(a, nx, row_s, row_e, col_s, col_e, cart_comm, nbrleft, nbrright,
+                nbrup, nbrdown,
+                row_type); // Exchange ghost cells using blocking MPI_Sendrecv
+    sweep2d(a, f, nx, row_s, row_e, col_s, col_e, b);
+    exchang2d_nb(b, nx, row_s, row_e, col_s, col_e, cart_comm, nbrleft,
+                 nbrright, nbrup, nbrdown,
+                 row_type); // Exchange ghost cells again, this time using
+                            // non-blocking MPI_Isend and MPI_Irecv
+    sweep2d(b, f, nx, row_s, row_e, col_s, col_e, a);
 
     // Check for convergence
-    ldiff = griddiff(a, b, nx, s, e);
+    ldiff = griddiff2d(a, b, nx, row_s, row_e, col_s, col_e);
     MPI_Allreduce(&ldiff, &glob_diff, 1, MPI_DOUBLE, MPI_SUM, cart_comm);
 
     // Print progress every 100 iterations
@@ -228,8 +247,9 @@ int main(int argc, char** argv) {
 
   // Write local grid to a file
   char local_filename[256];
-  sprintf(local_filename, "local1dproc%d", cart_rank);
-  write_grid(local_filename, a, nx, ny, cart_rank, s, e, 0);
+  sprintf(local_filename, "local2dproc%d", cart_rank);
+  write_grid(local_filename, a, nx, ny, cart_rank, row_s, row_e, col_s, col_e,
+             0);
 
   MPI_Barrier(
       cart_comm); // Barrier to ensure all processes have written their files
@@ -240,13 +260,17 @@ int main(int argc, char** argv) {
   }
 
   // Allocate memory for domain decomposition information
-  int* s_vals = NULL;
-  int* e_vals = NULL;
+  int* row_s_vals = NULL;
+  int* row_e_vals = NULL;
+  int* col_s_vals = NULL;
+  int* col_e_vals = NULL;
 
   if (cart_rank == 0) {
-    s_vals = (int*) malloc(nprocs * sizeof(int));
-    e_vals = (int*) malloc(nprocs * sizeof(int));
-    if (!s_vals || !e_vals) {
+    row_s_vals = (int*) malloc(nprocs * sizeof(int));
+    row_e_vals = (int*) malloc(nprocs * sizeof(int));
+    col_s_vals = (int*) malloc(nprocs * sizeof(int));
+    col_e_vals = (int*) malloc(nprocs * sizeof(int));
+    if (!row_s_vals || !row_e_vals || !col_s_vals || !col_e_vals) {
       fprintf(stderr, "Memory allocation error\n");
       MPI_Abort(cart_comm, 1);
     }
@@ -254,21 +278,24 @@ int main(int argc, char** argv) {
   }
 
   // Gather domain decomposition information to the root process
-  MPI_Gather(&s, 1, MPI_INT, s_vals, 1, MPI_INT, 0, cart_comm);
-  MPI_Gather(&e, 1, MPI_INT, e_vals, 1, MPI_INT, 0, cart_comm);
+  MPI_Gather(&row_s, 1, MPI_INT, row_s_vals, 1, MPI_INT, 0, cart_comm);
+  MPI_Gather(&row_e, 1, MPI_INT, row_e_vals, 1, MPI_INT, 0, cart_comm);
+  MPI_Gather(&col_s, 1, MPI_INT, col_s_vals, 1, MPI_INT, 0, cart_comm);
+  MPI_Gather(&col_e, 1, MPI_INT, col_e_vals, 1, MPI_INT, 0, cart_comm);
 
-  // Use GatherGrid to collect the solution from all the processes
-  GatherGrid(global_grid, a, s, e, nx, ny, cart_rank, nprocs, s_vals, e_vals,
-             cart_comm);
+  // Use GatherGrid2D to collect the solution from all the processes
+  GatherGrid2D(global_grid, a, row_s, row_e, col_s, col_e, nx, ny, cart_rank,
+               nprocs, row_s_vals, row_e_vals, col_s_vals, col_e_vals,
+               cart_comm);
 
   // Write the global grid and analytical solution to files
   if (cart_rank == 0) {
     char global_filename[256];
-    sprintf(global_filename, "global1dnx%d", nx);
+    sprintf(global_filename, "global2dnx%d", nx);
     printf("\nWriting final solution to files\n");
-    write_grid(global_filename, global_grid, nx, ny, cart_rank, 1, nx,
+    write_grid(global_filename, global_grid, nx, ny, cart_rank, 1, nx, 1, nx,
                0); // Write numerical solution
-    write_grid("analytical", g, nx, ny, cart_rank, 1, nx,
+    write_grid("analytical", g, nx, ny, cart_rank, 1, nx, 1, nx,
                0); // Write analytical solution
 
     // Calculate error statistics
@@ -294,9 +321,12 @@ int main(int argc, char** argv) {
   }
 
   // Clean up and finalise
+  MPI_Type_free(&row_type);
   if (cart_rank == 0) {
-    free(s_vals);
-    free(e_vals);
+    free(row_s_vals);
+    free(row_e_vals);
+    free(col_s_vals);
+    free(col_e_vals);
     printf("\n=======================================================\n");
     printf("                        SUCCESS                        \n");
     printf("=======================================================\n\n");

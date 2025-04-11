@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "poisson2d.h"
+#include "../include/poisson2d.h"
 
 /**
  * @brief Explain briefly.
