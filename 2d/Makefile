@@ -27,21 +27,17 @@ $(BINDIR)/poiss1d: $(OBJS)
 $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-# Rule to run the application with four processors
+# Rule to run the application with four processors and a grid size of 31
 run4: $(EXECS)
 	mpirun -np 4 $(BINDIR)/poiss1d
 
-# Rule to run the application with 16 processors
+# Rule to run the application with 16 processors and a grid size of 31
 run16: $(EXECS)
 	mpirun -np 16 $(BINDIR)/poiss1d
 
-# Generate a heatmap for the results using four processors
-heatmap4:
-	gnuplot scripts/heatmap4.gp
-
-# Generate a heatmap for the results using 16 processors
-heatmap16:
-	gnuplot scripts/heatmap16.gp
+# Generate a heatmap from the output files
+heatmap:
+	gnuplot scripts/heatmap.gp
 
 .PHONY: clean run heatmap
 clean:
