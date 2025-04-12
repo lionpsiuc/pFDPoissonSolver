@@ -1,9 +1,10 @@
 /**
- * @file decomp1d.c
+ * @file decomp1d.h
  *
- * @brief Explain briefly.
+ * @brief 1D domain decomposition utility for MPI parallelisation.
  *
- * Further explanation, if required.
+ * This header provides a function for dividing a 1D domain among multiple MPI
+ * processes, ensuring a balanced distribution of work.
  */
 
 #include <mpi.h>
@@ -11,13 +12,21 @@
 #include <stdlib.h>
 
 /**
- * @brief Explain briefly.
+ * @brief Calculates 1D domain decomposition for an MPI process.
  *
- * Further explanation, if required.
+ * Divides elements as evenly as possible among size processes, and determines
+ * the start and end indices for the given process rank. The function ensures
+ * a balanced distribution by giving one extra element to the first deficit
+ * processes when the number of elements is not evenly divisible by the total
+ * number of MPI processes.
  *
- * @param[in/out/in,out] param Explain briefly.
+ * @param[in] n The total number of elements to be distributed.
+ * @param[in] size The total number of MPI processes.
+ * @param[in] rank The rank of the current MPI process.
+ * @param[out] s Pointer to store the starting index for this process.
+ * @param[out] e Pointer to store the ending index for this process.
  *
- * @return Explain briefly.
+ * @return MPI_SUCCESS on successful completion.
  */
 int MPE_Decomp1d(int n, int size, int rank, int* s, int* e) {
   int nlocal, deficit;

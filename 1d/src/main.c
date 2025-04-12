@@ -24,8 +24,6 @@
 /**
  * @brief Main function.
  *
- * Further explanation, if required.
- *
  * @param[in] argc Explain briefly.
  * @param[in] argv Explain briefly.
  *
