@@ -28,11 +28,11 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 # Rule to run the application with four processors
-run: $(EXECS)
+run4: $(EXECS)
 	mpirun -np 4 $(BINDIR)/poiss1d
 
 # Rule to run the application with 16 processors
-run: $(EXECS)
+run16: $(EXECS)
 	mpirun -np 16 $(BINDIR)/poiss1d
 
 # Generate a heatmap from the output files
