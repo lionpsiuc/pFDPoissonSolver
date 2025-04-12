@@ -226,7 +226,7 @@ int main(int argc, char** argv) {
 
   // Write local grid to a file
   char local_filename[256];
-  sprintf(local_filename, "local1dproc%d", cart_rank);
+  sprintf(local_filename, "local1dproc%dnx%d", cart_rank, nx);
   write_grid(local_filename, a, nx, ny, cart_rank, s, e, 0);
 
   MPI_Barrier(

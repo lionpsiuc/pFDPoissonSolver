@@ -245,7 +245,7 @@ int main(int argc, char** argv) {
 
   // Write local grid to a file
   char local_filename[256];
-  sprintf(local_filename, "local2dproc%d", cart_rank);
+  sprintf(local_filename, "local2dproc%dnx%d", cart_rank, nx);
   write_grid(local_filename, a, nx, ny, cart_rank, row_s, row_e, col_s, col_e,
              0);
 
