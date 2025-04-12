@@ -1,6 +1,6 @@
 # Set output to PNG with enhanced text features
 set terminal pngcairo enhanced size 1600,600 font 'Arial,12'
-set output 'heatmap.png'
+set output 'heatmap4.png'
 
 # Enable multiplot to place two heatmaps
 set multiplot layout 1,2 title 'Analytical vs. Numerical Solution for the Poisson Equation Using 2D Decomposition' font 'Arial,16'
