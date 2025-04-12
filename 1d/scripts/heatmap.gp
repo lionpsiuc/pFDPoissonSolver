@@ -9,16 +9,16 @@ set multiplot layout 1,2 title 'Analytical vs. Numerical Solution for the Poisso
 set palette rgbformulae 22,13,-31
 set pm3d map
 set yrange [0:30] reverse
-set xrange[0:30]
+set xrange [0:30]
 
-# First plot - Numerical Solution
+# First plot
 set title 'Numerical Solution'
 set xlabel 'x'
 set ylabel 'y'
 set colorbox
 splot 'global1dnx31.txt' matrix with image
 
-# Second plot - Analytical Solution
+# Second plot
 set title 'Analytical Solution'
 set xlabel 'x'
 set ylabel 'y'
