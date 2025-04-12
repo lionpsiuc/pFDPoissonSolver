@@ -12,7 +12,7 @@ BINDIR = bin
 SRCS = $(wildcard $(SRCDIR)/*.c)
 OBJS = $(patsubst $(SRCDIR)/%.c,$(BUILDDIR)/%.o,$(SRCS))
 
-EXECS = $(BINDIR)/poiss1d
+EXECS = $(BINDIR)/poiss2d
 
 # Make sure the build and bin directories exist
 $(shell mkdir -p $(BUILDDIR) $(BINDIR))
@@ -20,7 +20,7 @@ $(shell mkdir -p $(BUILDDIR) $(BINDIR))
 all: $(EXECS)
 
 # Rule to compile the executable
-$(BINDIR)/poiss1d: $(OBJS)
+$(BINDIR)/poiss2d: $(OBJS)
 	$(CC) $(CFLAGS) -o $@ $^ $(LDFLAGS)
 
 # Rule to compile object files
@@ -29,11 +29,11 @@ $(BUILDDIR)/%.o: $(SRCDIR)/%.c
 
 # Rule to run the application with four processors and a grid size of 31
 run4: $(EXECS)
-	mpirun -np 4 $(BINDIR)/poiss1d
+	mpirun -np 4 $(BINDIR)/poiss2d
 
 # Rule to run the application with 16 processors and a grid size of 31
 run16: $(EXECS)
-	mpirun -np 16 $(BINDIR)/poiss1d
+	mpirun -np 16 $(BINDIR)/poiss2d
 
 # Generate a heatmap from the output files
 heatmap:
