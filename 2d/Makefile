@@ -35,10 +35,14 @@ run4: $(EXECS)
 run16: $(EXECS)
 	mpirun -np 16 $(BINDIR)/poiss1d
 
-# Generate a heatmap from the output files
-heatmap:
-	gnuplot scripts/heatmap.gp
+# Generate a heatmap for the results using four processors
+heatmap4:
+	gnuplot scripts/heatmap4.gp
+
+# Generate a heatmap for the results using 16 processors
+heatmap16:
+	gnuplot scripts/heatmap16.gp
 
 .PHONY: clean run heatmap
 clean:
-	$(RM) -r $(BUILDDIR)/* $(BINDIR)/* *.png *.txt
+	$(RM) -r $(BUILDDIR)/* $(BINDIR)/*
