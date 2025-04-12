@@ -262,11 +262,13 @@ int main(int argc, char** argv) {
   // Write the global grid and analytical solution to files
   if (cart_rank == 0) {
     char global_filename[256];
+    char analytical[256];
     sprintf(global_filename, "global1dnx%d", nx);
+    sprintf(analytical, "analyticalnx%d", nx);
     printf("\nWriting final solution to files\n");
     write_grid(global_filename, global_grid, nx, ny, cart_rank, 1, nx,
                0); // Write numerical solution
-    write_grid("analytical", g, nx, ny, cart_rank, 1, nx,
+    write_grid(analytical, g, nx, ny, cart_rank, 1, nx,
                0); // Write analytical solution
 
     // Calculate error statistics
