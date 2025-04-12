@@ -37,4 +37,4 @@ heatmap:
 
 .PHONY: clean run heatmap
 clean:
-	$(RM) -r $(BUILDDIR)/* $(BINDIR)/* *.png *.txt
+	$(RM) -r $(BUILDDIR)/* $(BINDIR)/*
