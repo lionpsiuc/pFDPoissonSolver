@@ -245,7 +245,7 @@ int main(int argc, char** argv) {
 
   // Write local grid to a file
   char local_filename[256];
-  sprintf(local_filename, "local2dproc%dnx%d", cart_rank, nx);
+  sprintf(local_filename, "local2dnprocs%dproc%dnx%d", nprocs, cart_rank, nx);
   write_grid(local_filename, a, nx, ny, cart_rank, row_s, row_e, col_s, col_e,
              0);
 
@@ -290,8 +290,8 @@ int main(int argc, char** argv) {
   if (cart_rank == 0) {
     char global_filename[256];
     char analytical[256];
-    sprintf(global_filename, "global2dnx%d", nx);
-    sprintf(analytical, "analyticalnx%d", nx);
+    sprintf(global_filename, "global2dnprocs%dnx%d", nprocs, nx);
+    sprintf(analytical, "analyticalnprocs%dnx%d", nprocs, nx);
     printf("\nWriting final solution to files\n");
     write_grid(global_filename, global_grid, nx, ny, cart_rank, 1, nx, 1, nx,
                0); // Write numerical solution
