@@ -1,6 +1,6 @@
 # Set output to PNG with enhanced text features
 set terminal pngcairo enhanced size 1600,600 font 'Arial,12'
-set output 'heatmap4.png'
+set output 'heatmapnprocs4nx31.png'
 
 # Enable multiplot to place two heatmaps
 set multiplot layout 1,2 title 'Analytical vs. Numerical Solution for the Poisson Equation Using 2D Decomposition' font 'Arial,16'
@@ -16,14 +16,14 @@ set title 'Numerical Solution'
 set xlabel 'x'
 set ylabel 'y'
 set colorbox
-splot 'global2dnx31.txt' matrix with image
+splot 'global2dnprocs4nx31.txt' matrix with image
 
 # Second plot
 set title 'Analytical Solution'
 set xlabel 'x'
 set ylabel 'y'
 set colorbox
-splot 'analytical.txt' matrix with image
+splot 'analyticalnprocs4nx31.txt' matrix with image
 
 # End multiplot
 unset multiplot
